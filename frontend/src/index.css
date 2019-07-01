@@ -1,0 +1,33 @@
+@font-face {
+	font-family: GothamBook;
+	src: url(./resources/GothamBook.otf);
+}
+
+@font-face {
+	font-family: GothamLight;
+	src: url(./resources/GothamLight.otf);
+}
+
+html, body {
+	height: 100%;
+	margin: 0;
+	font-family: GothamLight, sans-serif !important;
+	word-wrap: break-word;
+}
+
+h1, h2, h3, h4, h5, h6, .header {
+	text-transform: uppercase;
+	font-family: GothamBook, sans-serif !important;
+}
+
+.ui.disabled.input,.ui.input:not(.disabled) input[disabled] {
+	opacity:.99 !important;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.footer {
+	font-family: GothamBook, sans-serif !important;
+}

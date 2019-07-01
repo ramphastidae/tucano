@@ -1,0 +1,10 @@
+body > div,
+body > div > div,
+body > div > div > div.login-form {
+	background-color: #E8E8E8;
+}
+
+.grid-col {
+	max-width: 500px;
+	font-family: GothamLight, sans-serif;
+}

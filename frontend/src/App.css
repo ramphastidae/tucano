@@ -1,0 +1,20 @@
+/*noinspection ALL*/
+#page-container {
+	min-height: 100vh;
+}
+
+#content-wrap {
+	padding-bottom: 90px;
+	padding-top: 80px;
+}
+
+#footer {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	max-height: 80px;
+}
+
+.tableContainer {
+	background-color: #E8E8E8;
+}
