@@ -65,7 +65,9 @@ defmodule Tupi.Accounts.Policy do
       :update_applicant,
       :list_applicant_applications,
       :get_applicant_results!,
-      :list_applicant_results
+      :list_applicant_results,
+      :list_applicant_settings,
+      :update_applicant_setting
     ] do
     if u1 == u2 do
       true
@@ -92,7 +94,8 @@ defmodule Tupi.Accounts.Policy do
   def authorize(action, %Tenders.Contest{} = contest, :period)
     when action in [
       :update_applicant,
-      :list_applicant_applications
+      :list_applicant_applications,
+      :update_applicant_setting
     ] do
     interval = Timex.Interval.new(from: contest.begin, until: contest.end)
     DateTime.utc_now in interval

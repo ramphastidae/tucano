@@ -15,6 +15,7 @@ defmodule Tupi.Tenders do
   alias Tupi.Tenders.Application
   alias Tupi.Tenders.Subject
   alias Tupi.Tenders.Incoherence
+  alias Tupi.Tenders.ApplicantSetting
 
   def get_contest_header(conn) do
     conn
@@ -106,6 +107,36 @@ defmodule Tupi.Tenders do
 
   def change_contest(%Contest{} = contest) do
     Contest.changeset(contest, %{})
+  end
+
+  def list_applicant_settings(applicant_id, tenant) do
+    ApplicantSetting
+    |> where([i], i.applicant_id == ^applicant_id)
+    |> Repo.all(prefix: Triplex.to_prefix(tenant))
+  end
+
+  def get_applicant_setting!(id, tenant) do
+    Repo.get!(ApplicantSetting, id, prefix: Triplex.to_prefix(tenant))
+  end
+
+  def get_applicant_setting_key!(applicant_id, type_key, tenant) do
+    ApplicantSetting
+    |> where([i], i.applicant_id == ^applicant_id)
+    |> where([i], i.type_key == ^type_key)
+    |> Repo.all(prefix: Triplex.to_prefix(tenant))
+    |> List.first
+  end
+
+  def create_applicant_setting(attrs \\ %{}, tenant) do
+    %ApplicantSetting{}
+    |> ApplicantSetting.changeset(attrs)
+    |> Repo.insert(prefix: Triplex.to_prefix(tenant))
+  end
+
+  def update_applicant_setting(%ApplicantSetting{} = setting, attrs, tenant) do
+    setting
+    |> ApplicantSetting.update_changeset(attrs, tenant)
+    |> Repo.update(prefix: Triplex.to_prefix(tenant))
   end
 
   def list_incoherences(tenant) do

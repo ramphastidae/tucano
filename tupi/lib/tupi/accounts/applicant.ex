@@ -6,6 +6,7 @@ defmodule Tupi.Accounts.Applicant do
   alias Tupi.Accounts.User
   alias Tupi.Tenders.Application
   alias Tupi.Tenders.Subject
+  alias Tupi.Tenders.ApplicantSetting
 
   schema "applicants" do
     field :group, :string
@@ -15,6 +16,7 @@ defmodule Tupi.Accounts.Applicant do
     belongs_to :user, User
     has_many :applications, Application, on_replace: :delete
     many_to_many :subjects, Subject, join_through: Application
+    has_many :applicant_settings, ApplicantSetting, on_replace: :delete
 
     timestamps()
   end
@@ -53,10 +55,15 @@ defmodule Tupi.Accounts.Applicant do
       on: a.subject_id == subject.id,
       order_by: subject.setting_id,
       order_by: a.preference
-    from q in Tupi.Accounts.Applicant, preload: [applications: ^applications_query]
+    from q in Tupi.Accounts.Applicant, preload: [applications: ^applications_query], preload: [:applicant_settings]
   end
 
   def with_subjects do
     from q in Tupi.Accounts.Applicant, preload: [:subjects]
   end
+
+  def with_settings do
+    from q in Tupi.Accounts.Applicant, preload: [:applicant_settings]
+  end
+
 end

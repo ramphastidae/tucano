@@ -66,6 +66,7 @@ defmodule TupiWeb.Router do
       resources "/applicants", ApplicantController, except: [:new, :edit] do
         resources "/incoherences", IncoherenceController, only: [:index, :show, :create, :delete]
         resources "/applications", ApplicationController, only: [:index]
+        resources "/settings", ApplicantSettingController, only: [:index, :update]
       end
       resources "/incoherences", IncoherenceController, only: [:index, :update]
       resources "/settings", SettingController, only: [:index]

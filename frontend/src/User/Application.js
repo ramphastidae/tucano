@@ -1,8 +1,8 @@
 import React from 'react';
-import {Button, Container, Grid, Message, Segment} from 'semantic-ui-react';
+import {Button, Container, Form, Grid, Message, Segment} from 'semantic-ui-react';
 import {DragDropContext} from 'react-beautiful-dnd';
 import Column from './Application/Column';
-import {handleChange, handleError, tupi} from "../Shared/Helpers";
+import {handleError, tupi} from "../Shared/Helpers";
 
 class Application extends React.Component {
 
@@ -15,6 +15,7 @@ class Application extends React.Component {
 				columns: {},
 				columnOrder: []
 			},
+			allocations: [],
 			subjects: [],
 			contest: '',
 			loading: true,
@@ -26,7 +27,7 @@ class Application extends React.Component {
 			}
 		};
 
-		this.handleChange = handleChange.bind(this);
+		this.handleChange = this.handleChange.bind(this);
 		this.handleError = handleError.bind(this);
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.handleSave = this.handleSave.bind(this);
@@ -34,6 +35,7 @@ class Application extends React.Component {
 		this.handleApplications = this.handleApplications.bind(this);
 		this.handleSubjects = this.handleSubjects.bind(this);
 		this.handleSuccess = this.handleSuccess.bind(this);
+		this.handleSettings = this.handleSettings.bind(this);
 	}
 
 	componentWillMount() {
@@ -78,12 +80,27 @@ class Application extends React.Component {
 				null,
 				{'tenant': this.props.match.params.id}
 			);
+
+			await tupi(
+				'get',
+				'/v1/applicants/' + res.data.data.id + '/settings',
+				this.handleSettings,
+				this.handleError,
+				null,
+				{'tenant': this.props.match.params.id}
+			);
 		}
 	}
 
 	handleSubjects(res) {
 		if (res && res.hasOwnProperty('data') && res.data.hasOwnProperty('data')) {
 			this.treatIncludedData(res.data.included, res.data.data);
+		}
+	}
+
+	handleSettings(res) {
+		if (res && res.hasOwnProperty('data') && res.data.hasOwnProperty('data')) {
+			this.setState({allocations: res.data.data});
 		}
 	}
 
@@ -153,13 +170,37 @@ class Application extends React.Component {
 		return res;
 	}
 
-	handleSave() {
+	handleUpdateSettings() {
+		// eslint-disable-next-line array-callback-return
+		this.state.allocations.map(item => {
+			tupi(
+				'patch',
+				'/v1/applicants/' + this.state.id + '/settings/' + item.id,
+				this.handleSuccess,
+				this.handleError,
+				{
+					'data': {
+						attributes: {
+							applicant_setting: {
+								allocations: item.attributes.allocations
+							}
+						},
+						id: item.id,
+						type: 'applicant_settings'
+					},
+				},
+				{'tenant': this.state.contest}
+			);
+		});
+	}
+
+	async handleSave() {
 		this.setState({loading: true, success: false});
 
-		tupi(
+		await tupi (
 			'patch',
 			'/v1/applicants/' + this.state.id,
-			this.handleSuccess,
+			() => {},
 			this.handleError,
 			{
 				'data': {
@@ -172,6 +213,8 @@ class Application extends React.Component {
 			},
 			{'tenant': this.props.match.params.id}
 		);
+
+		await this.handleUpdateSettings();
 	}
 
 	handleSuccess(res) {
@@ -271,9 +314,17 @@ class Application extends React.Component {
 
 	};
 
+	handleChange(e) {
+		let el = e.target;
+		let allocations = this.state.allocations;
+		for(let i=0; i<allocations.length; i++) {
+			if(allocations[i].attributes.typeKey === el.name)
+				allocations[i].attributes.allocations = el.value;
+		}
+		this.setState({allocations: allocations});
+	}
+
 	render() {
-
-
 		return (
 			<React.Fragment>
 				<Container className='tableContainer'>
@@ -315,6 +366,33 @@ class Application extends React.Component {
 							header='Application Saved'
 							content={'Your Application was successfully saved'}
 						/>
+
+						{this.state.allocations.length !== 0 ?
+							<Segment color='black'>
+								<Grid columns='equal' divided stackable>
+									<Grid.Row>
+										<Grid.Column>
+											<h5>Number of allocations</h5>
+										</Grid.Column>
+									</Grid.Row>
+									<Grid.Row>
+										{this.state.allocations.map((item, i) =>
+											<Grid.Column key={item.id}>
+												{item.attributes.typeKey}
+												<Form.Input
+													name={item.attributes.typeKey}
+													type='number'
+													value={this.state.allocations[i].attributes.allocations}
+													onChange={this.handleChange}
+												/>
+											</Grid.Column>
+										)}
+									</Grid.Row>
+								</Grid>
+							</Segment>
+							:
+							""
+						}
 
 						<DragDropContext onDragEnd={this.onDragEnd}>
 							{this.state.initialData.columnOrder.map(columnId => {

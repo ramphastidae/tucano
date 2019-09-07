@@ -127,6 +127,7 @@ defmodule Tupi.Mediator do
       # Conflicts [x]
       # Timetables overlapping [x]
       # setting.allocations [x]
+      # applicant settings [x]
 
       m_subject = Ads.get_subject!(subject.id, tenant)
       m_setting = Ads.get_setting!(subject.setting.type_key, tenant)
@@ -134,8 +135,11 @@ defmodule Tupi.Mediator do
       l_conflicts = Map.get(conflicts_map, subject.code)
       l_code_applicant = Ads.list_code_str()
 
+      a_setting = Tenders.get_applicant_setting_key!(applicant.id, subject.setting.type_key, tenant)
+
       if m_subject.openings > m_subject.occupied &&
         m_setting.allocations > m_setting.occupied &&
+        a_setting.allocations > m_setting.occupied &&
         !check_conflicts?(l_conflicts, l_code_applicant) do
         
         Tenders.update_application(x, %{stage: 2}, tenant)

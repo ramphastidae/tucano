@@ -8,6 +8,7 @@ defmodule Tupi.Accounts do
   alias Tupi.Accounts.Applicant
   alias Tupi.EctoEnums.TypesEnum
   alias Tupi.Auth
+  alias Tupi.Tenders
 
   defdelegate authorize(action, user, params), to: Tupi.Accounts.Policy
 
@@ -149,6 +150,8 @@ defmodule Tupi.Accounts do
           Map.get(applicant, :id)
           |> get_applicant_preload!(tenant)
 
+        aux_create_applicant_setting(applicant, tenant)
+
         Tupi.Email.send_contest_email(user.email, tenant)
         |> Tupi.Mailer.deliver_now()
 
@@ -175,11 +178,23 @@ defmodule Tupi.Accounts do
       |> Map.get(:id)
       |> get_applicant_preload!(tenant)
 
+    aux_create_applicant_setting(applicant, tenant)
+
     user = Auth.reset_password_token(applicant.user)
     Tupi.Email.send_password_email(user.email, user.reset_password_token)
     |> Tupi.Mailer.deliver_now()
 
     {:ok, applicant}
+  end
+
+  defp aux_create_applicant_setting(applicant, tenant) do
+    Enum.map(Tenders.list_settings(tenant), fn x ->
+      Tenders.create_applicant_setting(%{
+        type_key: x.type_key,
+        allocations: x.allocations,
+        applicant_id: applicant.id
+      }, tenant)
+    end)
   end
 
   defp create_applicant_user_aux(attrs, tenant) do
