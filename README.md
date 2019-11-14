@@ -34,7 +34,7 @@ It can fill the correspondent form one by one or by uploading a `JSON`file with 
 		{
 			"id": "s12345",
 			"name": "John Doe",
-			"email": "s12345@ramphastidae.com",
+			"email": "s12345@ramphastidae.tucano.com",
 			"group": "Computer Science",
 			"score": 12.345
 		} 
