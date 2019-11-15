@@ -1,13 +1,13 @@
 # Tucano - Generic Allocation Contest Manager
 
 
-Web Application to manage allocation constests. Why is it **Generic**? Keep up with us for a little while.
+Web Application to manage allocation contests. Why is it **Generic**? Keep up with us for a little while.
 
 ### User types
 
 * **Admin:** create **Managers** that will be responsible for contests.
 * **Manager:** create contests and add **Applicants** to it.
-* **Applicant:** Participates in severall contests.
+* **Applicant:** Participates in several contests.
 
 ### Creating a new Contest
 
@@ -67,7 +67,7 @@ It can fill the correspondent form one by one or by uploading a `JSON`file with 
 
 ### Editing Info
 
-During the constest the manager can update severall info about each applicant and subject.
+During the contest the manager can update severall info about each applicant and subject.
 
 ### Application
 
@@ -81,4 +81,3 @@ When the application period ends, the manager can run the allocating algorithm a
 Applicants can consult their results inside platform also.
 
 The manager can export the results to a `csv` or `xls` file.
-
